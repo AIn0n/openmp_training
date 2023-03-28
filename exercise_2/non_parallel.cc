@@ -28,18 +28,14 @@ main(void)
   const double start = omp_get_wtime();
 
   omp_set_num_threads(NUM_OF_THREADS);
-  double sums[NUM_OF_THREADS] = {0.0};
+  std::array<double, NUM_OF_THREADS> sums = {0.0};
   #pragma omp parallel
   {
     const int id = omp_get_thread_num();
     sums[id] = run_for_id(id, num_steps, NUM_OF_THREADS, step);
   }
 
-  double sum = 0.0;
-  for (int i = 0; i < NUM_OF_THREADS; ++i)
-    sum += sums[i];
-
-  const double pi = step * sum;
+  const double pi = step * std::reduce(sums.begin(), sums.end(), 0.0);;
   const double total_time = omp_get_wtime() - start;
   std::cout << pi << "\ntime: " << total_time << '\n';
   return EXIT_SUCCESS;
