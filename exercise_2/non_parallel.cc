@@ -3,12 +3,27 @@
 #include <numeric>
 #include <omp.h>
 
+double
+run_for_id(
+  const int id,
+  const uint64_t num_steps,
+  const int num_of_threads,
+  const double step)
+{
+  double res = 0.0;
+  for (uint64_t i = id; i < num_steps; i += num_of_threads) {
+    const double x = (i + 0.5) * step;
+    res += 4.0 / (1.0 + x * x);
+  }
+  return res;
+}
+
 int
 main(void)
 {
   constexpr uint64_t num_steps = 100'000'000;
-  constexpr uint8_t NUM_OF_THREADS = 4;
   constexpr double step = 1.0 / num_steps;
+  const int NUM_OF_THREADS = 4;
 
   const double start = omp_get_wtime();
 
@@ -16,11 +31,8 @@ main(void)
   double sums[NUM_OF_THREADS] = {0.0};
   #pragma omp parallel
   {
-    const uint64_t id = omp_get_thread_num();
-    for (uint64_t i = id; i < num_steps; i += NUM_OF_THREADS) {
-      const double x = (i + 0.5) * step;
-      sums[id] += 4.0 / (1.0 + x * x);
-    }
+    const int id = omp_get_thread_num();
+    sums[id] = run_for_id(id, num_steps, NUM_OF_THREADS, step);
   }
 
   double sum = 0.0;
