@@ -35,7 +35,7 @@ main(void)
     sums[id] = run_for_id(id, num_steps, NUM_OF_THREADS, step);
   }
 
-  const double pi = step * std::reduce(sums.begin(), sums.end(), 0.0);;
+  const double pi = step * std::reduce(sums.begin(), sums.end(), 0.0);
   const double total_time = omp_get_wtime() - start;
   std::cout << pi << "\ntime: " << total_time << '\n';
   return EXIT_SUCCESS;
