@@ -5,7 +5,7 @@ int main(void)
 {
   #pragma omp parallel
   {
-    int ID = 0;
+    int ID = omp_get_thread_num();
     std::cout << "hello " << ID << '\n';
   }
 }
